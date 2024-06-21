@@ -3,6 +3,7 @@ __pycache__
 
 # dev virtual env
 venv
+.venv
 
 # dev database
 *.sqlite3
