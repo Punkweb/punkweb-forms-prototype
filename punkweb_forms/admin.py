@@ -10,8 +10,13 @@ class FormAdmin(admin.ModelAdmin):
 @admin.register(Field)
 class FieldAdmin(admin.ModelAdmin):
     list_display = (
+        "name",
+        "form",
+        "required",
         "label",
+        "disabled",
         "type",
+        "order",
     )
 
 
