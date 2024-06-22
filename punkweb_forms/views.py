@@ -17,9 +17,7 @@ def form_view(request, form_id):
         form = DynamicForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-
-            data_json = json.dumps(data)
-            FormSubmission.objects.create(form=form_instance, data=data_json)
+            FormSubmission.objects.create(form=form_instance, data=data)
 
             return redirect("punkweb_forms:form_list")
     else:
