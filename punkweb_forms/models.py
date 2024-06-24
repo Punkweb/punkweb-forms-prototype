@@ -1,3 +1,6 @@
+import json
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
@@ -46,6 +49,15 @@ class Field(models.Model):
         ],
     )
     order = models.IntegerField()
+    widget = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Optional custom widget class as a dotted path",
+    )
+    widget_options = models.TextField(
+        blank=True, default="{}", help_text="JSON string of widget options"
+    )
 
     class Meta:
         ordering = (
@@ -55,6 +67,14 @@ class Field(models.Model):
 
     def __str__(self):
         return f"{self.form} - {self.order} - {self.name} - {self.type}"
+
+    def clean(self):
+        super().clean()
+        try:
+            if self.widget_options:
+                json.loads(self.widget_options)
+        except json.JSONDecodeError:
+            raise ValidationError("Invalid JSON for widget options")
 
 
 class FormSubmission(models.Model):

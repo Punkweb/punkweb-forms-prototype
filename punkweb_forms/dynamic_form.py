@@ -1,4 +1,8 @@
+import json
+
 from django import forms
+from django.utils.module_loading import import_string
+
 from punkweb_forms.models import Field, Form
 
 
@@ -32,13 +36,19 @@ def get_form_class(form_id):
     field_dict = {}
     for field in fields:
         klass = get_field_class(field.type)
-        field_dict[field.name] = klass(required=field.required)
         field_kwargs = {
             "required": field.required,
             "label": field.label or None,
             "help_text": field.help_text or None,
             "disabled": field.disabled,
         }
+        if field.widget:
+            widget_class = import_string(field.widget)
+            widget_options = (
+                json.loads(field.widget_options) if field.widget_options else {}
+            )
+            field_kwargs["widget"] = widget_class(**widget_options)
+
         field_kwargs = {k: v for k, v in field_kwargs.items() if v is not None}
         field_dict[field.name] = klass(**field_kwargs)
 
